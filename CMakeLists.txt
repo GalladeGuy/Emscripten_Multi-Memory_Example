@@ -36,6 +36,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         # Convert memory.wat to memory.wasm
         COMMAND ${BINARYEN_PATH}/wasm-as -all ${CMAKE_CURRENT_SOURCE_DIR}/memory.wat -o ${CMAKE_CURRENT_BINARY_DIR}/memory.wasm
 
+        # Convert external.wat to external.wasm
+        COMMAND ${BINARYEN_PATH}/wasm-as -all ${CMAKE_CURRENT_SOURCE_DIR}/external.wat -o ${BIN_DIR}/external.wasm
+
         # Merge WebAssembly files
         COMMAND ${BINARYEN_PATH}/wasm-merge --rename-export-conflicts -all ${BIN_DIR}/${PROJECT_NAME}.wasm mod ${CMAKE_CURRENT_BINARY_DIR}/memory.wasm env -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_merged.wasm
 
