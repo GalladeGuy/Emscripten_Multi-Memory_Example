@@ -15,8 +15,8 @@ add_executable(${PROJECT_NAME} main.c)
 
 # Copy files to build directory
 add_custom_target(copyWebFiles
-        COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/index.html" "${PROJECT_SOURCE_DIR}/bin/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/coi-serviceworker.js" "${PROJECT_SOURCE_DIR}/bin/")
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/web/index.html" "${CMAKE_CURRENT_SOURCE_DIR}//bin/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/web/coi-serviceworker.js" "${CMAKE_CURRENT_SOURCE_DIR}//bin/")
 add_dependencies(${PROJECT_NAME} copyWebFiles)
 
 # Set Emscripten flags
@@ -24,7 +24,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".js")
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/")
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS
         "-sEXPORTED_RUNTIME_METHODS=['ccall','wasmExports','wasmMemory'] -sEXPORTED_FUNCTIONS=['_main'] \
-        --pre-js ${CMAKE_CURRENT_SOURCE_DIR}/pre.js --post-js ${CMAKE_CURRENT_SOURCE_DIR}/post.js \
+        --pre-js ${CMAKE_CURRENT_SOURCE_DIR}/web/pre.js --post-js ${CMAKE_CURRENT_SOURCE_DIR}/web/post.js \
         -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=256MB -sMAXIMUM_MEMORY=4GB \
         -sMODULARIZE -sEXPORT_ES6 \
         -sASSERTIONS -sERROR_ON_UNDEFINED_SYMBOLS=0"
