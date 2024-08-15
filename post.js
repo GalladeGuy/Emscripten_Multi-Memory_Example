@@ -1,0 +1,1 @@
+wasmImports["memory1"] = wasmMemory1;
