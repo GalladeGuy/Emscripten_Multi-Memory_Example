@@ -7,7 +7,8 @@ if(NOT EMSCRIPTEN)
 endif()
 
 # Set the path to wasm tools
-set(WASM_TOOLS_PATH "$ENV{HOME}/emsdk/upstream/bin")
+get_filename_component(BINARYEN_PATH "${CMAKE_C_COMPILER}" DIRECTORY)
+set(BINARYEN_PATH "${BINARYEN_PATH}/../bin")
 
 # Add the main executable
 add_executable(${PROJECT_NAME} main.c)
@@ -33,22 +34,22 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS
 set(BIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         # Convert memory.wat to memory.wasm
-        COMMAND ${WASM_TOOLS_PATH}/wasm-as -all ${CMAKE_CURRENT_SOURCE_DIR}/memory.wat -o ${CMAKE_CURRENT_BINARY_DIR}/memory.wasm
+        COMMAND ${BINARYEN_PATH}/wasm-as -all ${CMAKE_CURRENT_SOURCE_DIR}/memory.wat -o ${CMAKE_CURRENT_BINARY_DIR}/memory.wasm
 
         # Merge WebAssembly files
-        COMMAND ${WASM_TOOLS_PATH}/wasm-merge --rename-export-conflicts -all ${BIN_DIR}/${PROJECT_NAME}.wasm mod ${CMAKE_CURRENT_BINARY_DIR}/memory.wasm env -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_merged.wasm
+        COMMAND ${BINARYEN_PATH}/wasm-merge --rename-export-conflicts -all ${BIN_DIR}/${PROJECT_NAME}.wasm mod ${CMAKE_CURRENT_BINARY_DIR}/memory.wasm env -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_merged.wasm
 
         # (Optional) Convert merged WebAssembly to WAT for inspection
-        COMMAND ${WASM_TOOLS_PATH}/wasm-dis -all ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_merged.wasm -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_merged.wat
+        COMMAND ${BINARYEN_PATH}/wasm-dis -all ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_merged.wasm -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_merged.wat
 
         # Move the merged file to the bin directory
         COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_merged.wasm ${BIN_DIR}/${PROJECT_NAME}.wasm
 
         # Optimize WebAssembly file
-        COMMAND ${WASM_TOOLS_PATH}/wasm-opt -O3 -all ${BIN_DIR}/${PROJECT_NAME}.wasm -o ${BIN_DIR}/${PROJECT_NAME}.wasm
+        COMMAND ${BINARYEN_PATH}/wasm-opt -O3 -all ${BIN_DIR}/${PROJECT_NAME}.wasm -o ${BIN_DIR}/${PROJECT_NAME}.wasm
 
         # (Optional) Convert optimized WebAssembly to WAT for inspection
-        COMMAND ${WASM_TOOLS_PATH}/wasm-dis -all ${BIN_DIR}/${PROJECT_NAME}.wasm -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_optimized.wat
+        COMMAND ${BINARYEN_PATH}/wasm-dis -all ${BIN_DIR}/${PROJECT_NAME}.wasm -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_optimized.wat
 
         COMMENT "Processing and merging WebAssembly files"
 )
